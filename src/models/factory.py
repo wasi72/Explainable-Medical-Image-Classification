@@ -27,7 +27,8 @@ class ModelFactory:
         pretrained: bool = True,
         dropout_rate: float = 0.2,
         freeze_backbone: bool = False,
-        weights_path: Optional[str] = None
+        weights_path: Optional[str] = None,
+        load_checkpoint: bool = True
     ) -> nn.Module:
         """Instantiates the specified neural network architecture.
 
@@ -62,15 +63,16 @@ class ModelFactory:
             raise ValueError(f"Unhandled model name: {model_name}")
 
         # Check for trained weights checkpoint
-        target_weights = weights_path or os.path.join("weights", f"{model_name}_best.pth")
-        if target_weights and os.path.exists(target_weights):
-            try:
-                ckpt = torch.load(target_weights, map_location="cpu")
-                state = ckpt.get("state_dict", ckpt)
-                model.load_state_dict(state, strict=False)
-                logger.info(f"Successfully loaded trained checkpoint from {target_weights}")
-            except Exception as e:
-                logger.warning(f"Could not load checkpoint from {target_weights}: {e}")
+        if load_checkpoint:
+            target_weights = weights_path or os.path.join("weights", f"{model_name}_best.pth")
+            if target_weights and os.path.exists(target_weights):
+                try:
+                    ckpt = torch.load(target_weights, map_location="cpu")
+                    state = ckpt.get("state_dict", ckpt)
+                    model.load_state_dict(state, strict=False)
+                    logger.info(f"Successfully loaded trained checkpoint from {target_weights}")
+                except Exception as e:
+                    logger.warning(f"Could not load checkpoint from {target_weights}: {e}")
 
         if freeze_backbone and model_name != "baseline_cnn":
             cls.freeze_backbone(model, model_name)

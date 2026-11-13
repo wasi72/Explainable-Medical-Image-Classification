@@ -62,8 +62,12 @@ def train_model(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Device: {device}")
 
-    # Standard BCEWithLogitsLoss for calibrated probabilities
-    loss_fn = nn.BCEWithLogitsLoss()
+    # Weighted BCE loss with positive weights to combat class imbalance
+    # Clamping pos_weights ensures positive pathologies are strongly recognized (high sensitivity)
+    # without destabilizing gradients.
+    clamped_pos_weights = torch.clamp(pos_weights.to(device), min=2.5, max=10.0)
+    loss_fn = nn.BCEWithLogitsLoss(pos_weight=clamped_pos_weights)
+    logger.info(f"Initialized WeightedBCEWithLogitsLoss (min weight: {clamped_pos_weights.min():.2f}, max: {clamped_pos_weights.max():.2f})")
 
     # -------------------------------------------------------------
     # STAGE 1: Head Warm-up (Frozen Backbone)
@@ -73,7 +77,8 @@ def train_model(
         model_name=model_name,
         num_classes=14,
         pretrained=True,
-        freeze_backbone=True
+        freeze_backbone=True,
+        load_checkpoint=False
     ).to(device)
 
     optimizer = torch.optim.AdamW(

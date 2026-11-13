@@ -148,9 +148,11 @@ preset_choice = st.sidebar.selectbox(
         "Upload Custom Image",
         "Case 1: Cardiomegaly (Enlarged Heart)",
         "Case 2: Pleural Effusion (Fluid in Pleura)",
-        "Case 3: Lobar Pneumonia (Alveolar Opacity)",
+        "Case 3: Lobar Pneumonia & Consolidation",
         "Case 4: Solitary Pulmonary Nodule",
-        "Case 5: Normal Chest Radiograph"
+        "Case 5: Apical Pneumothorax (Collapsed Lung)",
+        "Case 6: Pulmonary Edema (Vascular Congestion)",
+        "Case 7: Normal Healthy Chest Radiograph"
     ]
 )
 
@@ -183,9 +185,11 @@ else:
     preset_map = {
         "Case 1: Cardiomegaly (Enlarged Heart)": ["Cardiomegaly"],
         "Case 2: Pleural Effusion (Fluid in Pleura)": ["Effusion"],
-        "Case 3: Lobar Pneumonia (Alveolar Opacity)": ["Pneumonia", "Consolidation"],
+        "Case 3: Lobar Pneumonia & Consolidation": ["Pneumonia", "Consolidation"],
         "Case 4: Solitary Pulmonary Nodule": ["Nodule"],
-        "Case 5: Normal Chest Radiograph": ["No Finding"]
+        "Case 5: Apical Pneumothorax (Collapsed Lung)": ["Pneumothorax"],
+        "Case 6: Pulmonary Edema (Vascular Congestion)": ["Edema"],
+        "Case 7: Normal Healthy Chest Radiograph": ["No Finding"]
     }
     case_findings = preset_map[preset_choice]
     loaded_image = generate_synthetic_chest_xray(size=(224, 224), findings=case_findings)
@@ -212,12 +216,19 @@ else:
     top_pathology, top_prob = sorted_findings[0]
 
     # Metrics summary cards
+    pos_count = sum(1 for c, p in pred_dict.items() if p >= DEFAULT_THRESHOLDS.get(c, 0.25))
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Selected Model", model_choice.split()[0], f"{latency_ms:.1f} ms")
-    m2.metric("Primary Suspicion", top_pathology, f"{top_prob:.1%}")
-    pos_count = sum(1 for c, p in pred_dict.items() if p >= DEFAULT_THRESHOLDS.get(c, 0.5))
-    m3.metric("Abnormal Findings", f"{pos_count} of 14", "Clinical Flags")
-    m4.metric("Inference Engine", str(DEVICE).upper(), "FP32")
+    m2.metric("Primary Finding", top_pathology, f"{top_prob:.1%}")
+    m3.metric("Pathology Flags", f"{pos_count} of 14", "Clinical Triggers" if pos_count > 0 else "Normal")
+    m4.metric("Diagnostic Status", "ABNORMAL" if pos_count > 0 else "NORMAL", "Low Risk" if pos_count == 0 else "High Risk")
+
+    # Diagnostic Banner
+    if pos_count > 0:
+        flagged = [f"**{c}** ({pred_dict[c]:.1%})" for c in DEFAULT_CLASSES if pred_dict[c] >= DEFAULT_THRESHOLDS.get(c, 0.25)]
+        st.error(f"🚨 **CLINICAL STATUS: ABNORMAL RADIOGRAPH** — Confirmed pathology detected above diagnostic threshold: {', '.join(flagged)}. Review Grad-CAM localization below.")
+    else:
+        st.success(f"✅ **CLINICAL STATUS: NORMAL RADIOGRAPH** — No diagnostic abnormalities detected. All 14 pathology risks remain safely within normal baseline limits.")
 
     st.markdown("---")
 
@@ -264,7 +275,7 @@ else:
                 saliency_map=VanillaSaliency(model).generate_saliency(tensor, cam_idx),
                 pathology_name=selected_cam_disease,
                 probability=pred_dict[selected_cam_disease],
-                threshold=DEFAULT_THRESHOLDS.get(selected_cam_disease, 0.5)
+                threshold=DEFAULT_THRESHOLDS.get(selected_cam_disease, 0.25)
             )
             st.image(panel, use_container_width=True)
         with vis_tabs[2]:
@@ -276,7 +287,7 @@ else:
         # Interactive probability bars
         chart_data = []
         for disease, prob in sorted_findings:
-            thresh = DEFAULT_THRESHOLDS.get(disease, 0.5)
+            thresh = DEFAULT_THRESHOLDS.get(disease, 0.25)
             is_pos = prob >= thresh
             risk = "High" if prob >= 0.70 else ("Moderate" if is_pos else "Low")
             chart_data.append({

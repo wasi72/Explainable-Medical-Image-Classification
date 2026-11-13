@@ -36,7 +36,7 @@ class ResNet50XRay(nn.Module):
 
         linear = nn.Linear(num_features, num_classes)
         nn.init.normal_(linear.weight, mean=0.0, std=0.01)
-        nn.init.constant_(linear.bias, -3.5)
+        nn.init.constant_(linear.bias, -2.5)
 
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout_rate),

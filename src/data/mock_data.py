@@ -121,19 +121,28 @@ def generate_synthetic_chest_xray(
         meniscus = (y > (h * 0.64 + 0.15 * (x - w * 0.20))) & (x < w * 0.35)
         base[meniscus & right_lung] = 55.0
 
-    # Pneumonia / Consolidation / Infiltration: Alveolar consolidation with patchy opacities
-    if "Pneumonia" in findings or "Consolidation" in findings or "Infiltration" in findings:
-        pneu_center = (w * 0.30, h * 0.54)
+    # Pneumonia / Infiltration: Fluffy alveolar infiltrate
+    if "Pneumonia" in findings or "Infiltration" in findings:
+        pneu_center = (w * 0.30, h * 0.52)
         pneu_mask = (
-            ((x - pneu_center[0]) / (w * 0.12)) ** 2 +
-            ((y - pneu_center[1]) / (h * 0.11)) ** 2
+            ((x - pneu_center[0]) / (w * 0.13)) ** 2 +
+            ((y - pneu_center[1]) / (h * 0.12)) ** 2
         ) <= 1.0
         # Fluffy dense alveolar infiltrate
-        base[pneu_mask & right_lung] -= 75.0
+        base[pneu_mask & right_lung] = np.minimum(base[pneu_mask & right_lung], 60.0)
+
+    # Consolidation: Dense homogeneous lobar opacification
+    if "Consolidation" in findings:
+        cons_center = (w * 0.32, h * 0.58)
+        cons_mask = (
+            ((x - cons_center[0]) / (w * 0.14)) ** 2 +
+            ((y - cons_center[1]) / (h * 0.14)) ** 2
+        ) <= 1.0
+        base[cons_mask & right_lung] = np.minimum(base[cons_mask & right_lung], 50.0)
 
     # Nodule / Mass: Well-circumscribed focal coin lesion
     if "Nodule" in findings or "Mass" in findings:
-        radius = w * 0.06 if "Mass" in findings else w * 0.03
+        radius = w * 0.07 if "Mass" in findings else w * 0.04
         nodule_center = (w * 0.72, h * 0.38)
         nodule_mask = (
             ((x - nodule_center[0]) / radius) ** 2 +
@@ -148,26 +157,45 @@ def generate_synthetic_chest_xray(
 
     # Atelectasis: Linear horizontal plate-like discoid collapse band at base
     if "Atelectasis" in findings:
-        atelectasis_mask = (np.abs(y - h * 0.65) < 3.5) & (x > w * 0.18) & (x < w * 0.40) & right_lung
+        atelectasis_mask = (np.abs(y - h * 0.65) < 4.0) & (x > w * 0.18) & (x < w * 0.42) & right_lung
         base[atelectasis_mask] = 45.0
 
     # Edema: Bat-wing perihilar vascular engorgement
     if "Edema" in findings:
         edema_mask = (np.abs(x - w * 0.50) < w * 0.22) & (np.abs(y - h * 0.52) < h * 0.16) & (right_lung | left_lung)
-        base[edema_mask] -= 45.0
+        base[edema_mask] = np.minimum(base[edema_mask], 70.0)
+
+    # Emphysema: Hyperlucent lung fields
+    if "Emphysema" in findings:
+        base[right_lung | left_lung] += 30.0
+
+    # Fibrosis: Apical reticular interstitial markings
+    if "Fibrosis" in findings:
+        fib_mask = (y < h * 0.36) & (x > w * 0.20) & (x < w * 0.42) & right_lung
+        base[fib_mask] = np.minimum(base[fib_mask], 65.0)
+
+    # Pleural Thickening: Lateral pleural rim
+    if "Pleural_Thickening" in findings:
+        pleural_rim = (np.abs(x - w * 0.15) < 3.0) & (y > h * 0.30) & (y < h * 0.60)
+        base[pleural_rim] = 45.0
+
+    # Hernia: Retrocardiac visceral gas-fluid lesion
+    if "Hernia" in findings:
+        hernia_mask = (((x - w * 0.48) / (w * 0.06)) ** 2 + ((y - h * 0.68) / (h * 0.08)) ** 2) <= 1.0
+        base[hernia_mask] = 120.0
 
     # Add realistic Gaussian noise to simulate X-ray detector scatter
-    noise = np.random.normal(0, 4.0, base.shape).astype(np.float32)
+    noise = np.random.normal(0, 3.5, base.shape).astype(np.float32)
     final_arr = np.clip(base + noise, 0, 255).astype(np.uint8)
 
     img = Image.fromarray(final_arr, mode="L")
-    img = img.filter(ImageFilter.GaussianBlur(radius=1.0))
+    img = img.filter(ImageFilter.GaussianBlur(radius=0.8))
     return img
 
 
 def create_mock_nih_dataset(
     output_dir: str = "data",
-    num_samples: int = 300,
+    num_samples: int = 240,
     num_patients: int = 60
 ) -> pd.DataFrame:
     """Generates a structured, balanced mock dataset with sufficient Normal and Pathology cases."""
@@ -175,10 +203,9 @@ def create_mock_nih_dataset(
     os.makedirs(img_dir, exist_ok=True)
 
     records = []
-    # 35% Normal cases to ensure model strongly learns healthy baseline
-    # 65% Pathology cases across the key disease types
+    # Balanced classes distribution:
+    # Every pathology has sufficient positive cases (12-20), plus ~30% clean Normal cases
     disease_classes = [
-        ["No Finding"],
         ["No Finding"],
         ["No Finding"],
         ["Cardiomegaly"],
@@ -191,6 +218,10 @@ def create_mock_nih_dataset(
         ["Pneumothorax"],
         ["Atelectasis"],
         ["Edema"],
+        ["Emphysema"],
+        ["Fibrosis"],
+        ["Pleural_Thickening"],
+        ["Hernia"],
         ["Cardiomegaly", "Effusion"],
         ["Pneumonia", "Consolidation"],
         ["No Finding"],
