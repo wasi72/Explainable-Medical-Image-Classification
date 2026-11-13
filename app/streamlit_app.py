@@ -81,10 +81,12 @@ DEFAULT_CLASSES = [
     "Hernia"
 ]
 
-DEFAULT_THRESHOLDS = {c: 0.50 for c in DEFAULT_CLASSES}
-DEFAULT_THRESHOLDS["Pneumothorax"] = 0.35
-DEFAULT_THRESHOLDS["Pneumonia"] = 0.40
-DEFAULT_THRESHOLDS["Edema"] = 0.40
+DEFAULT_THRESHOLDS = {c: 0.25 for c in DEFAULT_CLASSES}
+DEFAULT_THRESHOLDS["Pneumothorax"] = 0.20
+DEFAULT_THRESHOLDS["Pneumonia"] = 0.20
+DEFAULT_THRESHOLDS["Consolidation"] = 0.20
+DEFAULT_THRESHOLDS["Effusion"] = 0.20
+DEFAULT_THRESHOLDS["Edema"] = 0.20
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

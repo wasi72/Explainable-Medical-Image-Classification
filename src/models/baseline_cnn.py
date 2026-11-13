@@ -48,6 +48,8 @@ class BaselineCNN(nn.Module):
         self.global_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.dropout = nn.Dropout(dropout_rate)
         self.classifier = nn.Linear(256, num_classes)
+        nn.init.normal_(self.classifier.weight, mean=0.0, std=0.01)
+        nn.init.constant_(self.classifier.bias, -3.5)
 
     def get_target_layer(self) -> nn.Module:
         """Returns the final convolutional block for Grad-CAM."""

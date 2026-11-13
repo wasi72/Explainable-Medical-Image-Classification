@@ -30,9 +30,14 @@ class DenseNet121XRay(nn.Module):
 
         # CheXNet style classifier replacement
         num_features = backbone.classifier.in_features  # 1024
+        linear = nn.Linear(num_features, num_classes)
+        # Initialize with prior negative bias so normal lungs default to low probabilities (~3%)
+        nn.init.normal_(linear.weight, mean=0.0, std=0.01)
+        nn.init.constant_(linear.bias, -3.5)
+
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout_rate),
-            nn.Linear(num_features, num_classes)
+            linear
         )
 
     def get_target_layer(self) -> nn.Module:

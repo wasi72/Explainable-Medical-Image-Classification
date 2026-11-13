@@ -1,6 +1,8 @@
 """Factory pattern for model instantiation, parameter freezing, and layer hooks."""
 
+import os
 from typing import Optional
+import torch
 import torch.nn as nn
 
 from src.models.baseline_cnn import BaselineCNN
@@ -24,7 +26,8 @@ class ModelFactory:
         num_classes: int = 14,
         pretrained: bool = True,
         dropout_rate: float = 0.2,
-        freeze_backbone: bool = False
+        freeze_backbone: bool = False,
+        weights_path: Optional[str] = None
     ) -> nn.Module:
         """Instantiates the specified neural network architecture.
 
@@ -34,6 +37,7 @@ class ModelFactory:
             pretrained: Whether to load ImageNet pretrained weights.
             dropout_rate: Dropout probability in classification head.
             freeze_backbone: Whether to freeze feature extractor layers for Stage 1 warm-up.
+            weights_path: Optional path to custom trained checkpoint (.pth).
 
         Returns:
             Configured PyTorch nn.Module.
@@ -56,6 +60,17 @@ class ModelFactory:
             model = BaselineCNN(num_classes=num_classes, dropout_rate=dropout_rate)
         else:
             raise ValueError(f"Unhandled model name: {model_name}")
+
+        # Check for trained weights checkpoint
+        target_weights = weights_path or os.path.join("weights", f"{model_name}_best.pth")
+        if target_weights and os.path.exists(target_weights):
+            try:
+                ckpt = torch.load(target_weights, map_location="cpu")
+                state = ckpt.get("state_dict", ckpt)
+                model.load_state_dict(state, strict=False)
+                logger.info(f"Successfully loaded trained checkpoint from {target_weights}")
+            except Exception as e:
+                logger.warning(f"Could not load checkpoint from {target_weights}: {e}")
 
         if freeze_backbone and model_name != "baseline_cnn":
             cls.freeze_backbone(model, model_name)

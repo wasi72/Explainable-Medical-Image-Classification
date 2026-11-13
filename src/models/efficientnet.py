@@ -25,9 +25,13 @@ class EfficientNetXRay(nn.Module):
 
         # In EfficientNet-B0, classifier has 1280 in_features
         num_features = backbone.classifier[1].in_features
+        linear = nn.Linear(num_features, num_classes)
+        nn.init.normal_(linear.weight, mean=0.0, std=0.01)
+        nn.init.constant_(linear.bias, -3.5)
+
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout_rate),
-            nn.Linear(num_features, num_classes)
+            linear
         )
 
     def get_target_layer(self) -> nn.Module:

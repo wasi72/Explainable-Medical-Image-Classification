@@ -34,9 +34,13 @@ class ResNet50XRay(nn.Module):
         self.avgpool = backbone.avgpool
         num_features = backbone.fc.in_features  # 2048
 
+        linear = nn.Linear(num_features, num_classes)
+        nn.init.normal_(linear.weight, mean=0.0, std=0.01)
+        nn.init.constant_(linear.bias, -3.5)
+
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout_rate),
-            nn.Linear(num_features, num_classes)
+            linear
         )
 
     def get_target_layer(self) -> nn.Module:
