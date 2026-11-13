@@ -1,0 +1,93 @@
+project:
+  name: "Explainable Deep Learning Framework for Multi-Label Chest X-Ray Disease Classification"
+  version: "1.0.0"
+  description: "Clinical decision-support and explainability framework for chest radiograph pathology detection using DenseNet, ResNet, EfficientNet and Grad-CAM."
+  seed: 42
+
+data:
+  dataset_name: "NIH_ChestXray14"
+  data_dir: "data"
+  images_dir: "data/images"
+  csv_file: "data/Data_Entry_2017.csv"
+  sample_dir: "data/sample_images"
+  image_size: [224, 224]
+  grayscale_to_rgb: true
+  use_clahe: true
+  clahe_clip_limit: 2.0
+  clahe_tile_grid_size: [8, 8]
+  normalization:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+  split_ratio:
+    train: 0.70
+    val: 0.10
+    test: 0.20
+  classes:
+    - "Atelectasis"
+    - "Cardiomegaly"
+    - "Effusion"
+    - "Infiltration"
+    - "Mass"
+    - "Nodule"
+    - "Pneumonia"
+    - "Pneumothorax"
+    - "Consolidation"
+    - "Edema"
+    - "Emphysema"
+    - "Fibrosis"
+    - "Pleural_Thickening"
+    - "Hernia"
+
+models:
+  primary: "densenet121"
+  available:
+    - "densenet121"
+    - "resnet50"
+    - "efficientnet_b0"
+    - "baseline_cnn"
+  weights_dir: "weights"
+  dropout_rate: 0.2
+  pretrained: true
+
+training:
+  batch_size: 16
+  num_workers: 2
+  learning_rate: 0.0001
+  weight_decay: 0.01
+  optimizer: "adamw"
+  epochs: 20
+  loss_type: "weighted_bce"  # options: bce, weighted_bce, focal, asymmetric
+  focal_gamma: 2.0
+  focal_alpha: 0.25
+  scheduler:
+    name: "ReduceLROnPlateau"
+    mode: "min"
+    factor: 0.1
+    patience: 3
+    min_lr: 1e-6
+  early_stopping:
+    patience: 5
+    min_delta: 0.001
+
+explainability:
+  methods:
+    - "gradcam"
+    - "gradcam_plus_plus"
+    - "saliency"
+  default_method: "gradcam"
+  overlay_alpha: 0.45
+  colormap: "jet"
+  target_layers:
+    densenet121: "features.denseblock4"
+    resnet50: "layer4"
+    efficientnet_b0: "features.8"
+    baseline_cnn: "features.9"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  title: "Chest X-Ray XAI Decision Support API"
+
+app:
+  title: "ChestGuard XAI: Clinical Decision Support System"
+  theme: "dark"

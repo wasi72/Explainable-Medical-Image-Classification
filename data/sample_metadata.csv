@@ -1,0 +1,41 @@
+Image Index,Finding Labels,Follow-up #,Patient ID,Patient Age,Patient Gender,View Position,OriginalImage[Width,Height],OriginalImagePixelSpacing[x,y],image_path
+00000001_001.png,No Finding,0,PATIENT_0001,68,F,AP,1024,1024,0.143,0.143,data\sample_images\00000001_001.png
+00000002_001.png,Cardiomegaly,1,PATIENT_0002,83,M,PA,1024,1024,0.143,0.143,data\sample_images\00000002_001.png
+00000003_001.png,Effusion,2,PATIENT_0003,34,M,AP,1024,1024,0.143,0.143,data\sample_images\00000003_001.png
+00000004_001.png,Pneumonia,0,PATIENT_0004,46,F,PA,1024,1024,0.143,0.143,data\sample_images\00000004_001.png
+00000005_001.png,Infiltration,1,PATIENT_0005,43,M,PA,1024,1024,0.143,0.143,data\sample_images\00000005_001.png
+00000006_001.png,Atelectasis,2,PATIENT_0006,70,F,PA,1024,1024,0.143,0.143,data\sample_images\00000006_001.png
+00000007_001.png,Effusion|Cardiomegaly,0,PATIENT_0007,53,F,PA,1024,1024,0.143,0.143,data\sample_images\00000007_001.png
+00000008_001.png,Pneumonia|Consolidation,1,PATIENT_0008,51,F,PA,1024,1024,0.143,0.143,data\sample_images\00000008_001.png
+00000009_001.png,Nodule,2,PATIENT_0009,36,F,PA,1024,1024,0.143,0.143,data\sample_images\00000009_001.png
+00000010_001.png,Pneumothorax,0,PATIENT_0010,78,F,PA,1024,1024,0.143,0.143,data\sample_images\00000010_001.png
+00000011_001.png,Mass,1,PATIENT_0011,79,F,PA,1024,1024,0.143,0.143,data\sample_images\00000011_001.png
+00000012_001.png,Emphysema,2,PATIENT_0012,22,F,PA,1024,1024,0.143,0.143,data\sample_images\00000012_001.png
+00000013_001.png,Edema,0,PATIENT_0013,39,M,PA,1024,1024,0.143,0.143,data\sample_images\00000013_001.png
+00000014_001.png,Pleural_Thickening,1,PATIENT_0014,32,F,AP,1024,1024,0.143,0.143,data\sample_images\00000014_001.png
+00000015_001.png,Fibrosis,2,PATIENT_0015,75,M,PA,1024,1024,0.143,0.143,data\sample_images\00000015_001.png
+00000016_001.png,Hernia,0,PATIENT_0001,71,M,AP,1024,1024,0.143,0.143,data\sample_images\00000016_001.png
+00000017_001.png,No Finding,1,PATIENT_0002,78,F,PA,1024,1024,0.143,0.143,data\sample_images\00000017_001.png
+00000018_001.png,Cardiomegaly,2,PATIENT_0003,40,F,AP,1024,1024,0.143,0.143,data\sample_images\00000018_001.png
+00000019_001.png,Effusion,0,PATIENT_0004,62,M,PA,1024,1024,0.143,0.143,data\sample_images\00000019_001.png
+00000020_001.png,Pneumonia,1,PATIENT_0005,24,F,PA,1024,1024,0.143,0.143,data\sample_images\00000020_001.png
+00000021_001.png,Infiltration,2,PATIENT_0006,37,F,PA,1024,1024,0.143,0.143,data\sample_images\00000021_001.png
+00000022_001.png,Atelectasis,0,PATIENT_0007,45,F,PA,1024,1024,0.143,0.143,data\sample_images\00000022_001.png
+00000023_001.png,Effusion|Cardiomegaly,1,PATIENT_0008,79,M,PA,1024,1024,0.143,0.143,data\sample_images\00000023_001.png
+00000024_001.png,Pneumonia|Consolidation,2,PATIENT_0009,62,M,PA,1024,1024,0.143,0.143,data\sample_images\00000024_001.png
+00000025_001.png,Nodule,0,PATIENT_0010,36,F,AP,1024,1024,0.143,0.143,data\sample_images\00000025_001.png
+00000026_001.png,Pneumothorax,1,PATIENT_0011,27,F,AP,1024,1024,0.143,0.143,data\sample_images\00000026_001.png
+00000027_001.png,Mass,2,PATIENT_0012,81,F,PA,1024,1024,0.143,0.143,data\sample_images\00000027_001.png
+00000028_001.png,Emphysema,0,PATIENT_0013,84,M,PA,1024,1024,0.143,0.143,data\sample_images\00000028_001.png
+00000029_001.png,Edema,1,PATIENT_0014,76,M,PA,1024,1024,0.143,0.143,data\sample_images\00000029_001.png
+00000030_001.png,Pleural_Thickening,2,PATIENT_0015,53,F,AP,1024,1024,0.143,0.143,data\sample_images\00000030_001.png
+00000031_001.png,Fibrosis,0,PATIENT_0001,59,M,PA,1024,1024,0.143,0.143,data\sample_images\00000031_001.png
+00000032_001.png,Hernia,1,PATIENT_0002,81,M,PA,1024,1024,0.143,0.143,data\sample_images\00000032_001.png
+00000033_001.png,No Finding,2,PATIENT_0003,69,M,PA,1024,1024,0.143,0.143,data\sample_images\00000033_001.png
+00000034_001.png,Cardiomegaly,0,PATIENT_0004,41,F,PA,1024,1024,0.143,0.143,data\sample_images\00000034_001.png
+00000035_001.png,Effusion,1,PATIENT_0005,27,F,PA,1024,1024,0.143,0.143,data\sample_images\00000035_001.png
+00000036_001.png,Pneumonia,2,PATIENT_0006,62,M,PA,1024,1024,0.143,0.143,data\sample_images\00000036_001.png
+00000037_001.png,Infiltration,0,PATIENT_0007,44,F,PA,1024,1024,0.143,0.143,data\sample_images\00000037_001.png
+00000038_001.png,Atelectasis,1,PATIENT_0008,37,F,PA,1024,1024,0.143,0.143,data\sample_images\00000038_001.png
+00000039_001.png,Effusion|Cardiomegaly,2,PATIENT_0009,54,F,PA,1024,1024,0.143,0.143,data\sample_images\00000039_001.png
+00000040_001.png,Pneumonia|Consolidation,0,PATIENT_0010,36,M,PA,1024,1024,0.143,0.143,data\sample_images\00000040_001.png

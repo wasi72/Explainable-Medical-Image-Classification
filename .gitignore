@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyTorch checkpoints and weights
+*.pth
+*.pt
+*.ckpt
+
+# Environment & Virtual Environments
+.env
+venv/
+env/
+ENV/
+*.egg-info/
+*.egg
+
+# Data and heavy images (except demo data)
+data/images/
+data/*.tar.gz
+data/*.zip
+
+# Logs & profiling
+*.log
+mlruns/
+lightning_logs/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Workspace runner scripts
+powershell.cmd
+scripts/create_repo.py
